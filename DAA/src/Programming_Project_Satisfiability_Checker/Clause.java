@@ -5,7 +5,6 @@ import java.util.Map;
 
 public class Clause {
     private boolean result = false;
-    String name;
     Map<Integer, Boolean> map = new HashMap(); //Hashmap of integer and boolean (True = NOT, false = normal)
 
 
