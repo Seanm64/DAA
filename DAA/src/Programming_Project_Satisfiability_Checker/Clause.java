@@ -1,10 +1,10 @@
 package Programming_Project_Satisfiability_Checker;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Clause {
-    private boolean result = false;
     Map<Integer, Boolean> map = new HashMap(); //Hashmap of integer and boolean (True = NOT, false = normal)
 
 
@@ -19,24 +19,26 @@ public class Clause {
             map.put(Math.abs(put), true);
     }
 
-    public boolean checkClause()
-    {
-
-
-        return true;
-    }
-
-
-    public boolean getBool(int i)
-    {
-        return map.get(i);
-    }
-
-    public boolean finalRestult()
+    public boolean checkClause(List<Boolean> variables)
     {
         if(map.size() == 0)
-            return true;
+            return true; //If the clause is empty, don't bother going through the list
 
-        return false;
+        for(int i = 1; i <= variables.size(); i++)
+        {
+            if(map.containsKey(i)) //If the map contains something in the list
+            {
+                //Check to see if it any of them can return true, 1 true means the clause is fufilled
+                if(map.get(i) && variables.get(i)) //If variables = true, but it's a NOT clause
+                    return false;
+                if(map.get(i) && ! variables.get(i)) //If variables = false, but it's a NOT clause
+                    return true;
+                if(! (map.get(i)) && variables.get(i)) //If variables = true, and it's normal
+                     return true;
+
+                return false; //Variables = false, and it's normal
+            }
+        }
+        return true; //Shouldn't reach
     }
 }
