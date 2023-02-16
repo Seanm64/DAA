@@ -31,6 +31,7 @@ public class Driver {
             if (input[0].charAt(0) == 'p') {
                 name = (input[0] + " " + input[1] + " " + input[2] + " " + input[3]);
                 System.out.println("This is " + name);
+                formula.setVariables(Integer.parseInt(input[2])); //Creating all of the variables in a boolean array
             }
 
             if (input[0].charAt(0) != 'c' && input[0].charAt(0) != 'p') {

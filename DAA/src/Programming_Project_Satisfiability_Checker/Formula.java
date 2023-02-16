@@ -5,12 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Formula {
-    List<Clause> list = new LinkedList<>(); // The overarching structure is a LinkedList of clauses, if one clause is false
+    List<Clause> list = new ArrayList<>(); // The overarching structure is a ArrayList of clauses, easy to gain access to
     List<Boolean> variables = new ArrayList<>();
 
     public Formula()
     {
-        setVariableList();
+
     }
 
     public void add(Clause clause) {
@@ -22,7 +22,7 @@ public class Formula {
         for(int i = 0; i < list.size(); i++) {
             if (!(testClause(list.get(i)))) //Testing each one at a time, if a clause doesn't work:
             {
-                //incrementVariableList(); //If it fails, keep doing it but increment the variables
+                incrementVariableList(); //If it fails, keep doing it but increment the variables
                 if(wentThroughVariableList()) //Went through the whole list, no possible outcomes
                     return false;
 
@@ -47,9 +47,13 @@ public class Formula {
     }
 
 
-    private void setVariableList()
+    public void incrementVariableList()
     {
-        for(int i = 1; i <= list.size(); i++)
+
+    }
+
+    public void setVariables(int parseInt) {
+        for(int i = 1; i <= parseInt; i++)
             variables.add(false);
     }
 }

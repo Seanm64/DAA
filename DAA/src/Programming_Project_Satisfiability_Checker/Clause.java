@@ -24,21 +24,19 @@ public class Clause {
         if(map.size() == 0)
             return true; //If the clause is empty, don't bother going through the list
 
-        for(int i = 1; i <= variables.size(); i++)
+        for(int i = 0; i < variables.size(); i++)
         {
-            if(map.containsKey(i)) //If the map contains something in the list
+            int lookingFor = i+1; //Since the boolean variable list is 1 off, we want to add 1 to it
+
+            if(map.containsKey(lookingFor)) //If the map contains something in the list
             {
                 //Check to see if it any of them can return true, 1 true means the clause is fufilled
-                if(map.get(i) && variables.get(i)) //If variables = true, but it's a NOT clause
-                    return false;
-                if(map.get(i) && ! variables.get(i)) //If variables = false, but it's a NOT clause
+                if(map.get(lookingFor) && ! variables.get(lookingFor)) //If variables = false, but it's a NOT clause
                     return true;
-                if(! (map.get(i)) && variables.get(i)) //If variables = true, and it's normal
+                if(! (map.get(lookingFor)) && variables.get(lookingFor)) //If variables = true, and it's normal
                      return true;
-
-                return false; //Variables = false, and it's normal
             }
         }
-        return true; //Shouldn't reach
+        return false;  //If it goes through the whole list, this clause is not satisfied
     }
 }
