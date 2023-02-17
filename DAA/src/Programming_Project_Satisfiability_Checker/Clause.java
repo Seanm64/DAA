@@ -1,4 +1,7 @@
 package Programming_Project_Satisfiability_Checker;
+/** Clause class - Stores a map of variables, compares the variables to check if they can be satisfied
+ * @author Sean McKay
+ */
 
 import java.util.HashMap;
 import java.util.List;

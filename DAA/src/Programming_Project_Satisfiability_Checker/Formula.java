@@ -1,10 +1,13 @@
 package Programming_Project_Satisfiability_Checker;
+/** Formula class, uses an ArrayList to store Clauses, goes through each clause to make sure that it can be satisfied
+ * @author Sean McKay
+ */
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Formula {
-    List<Clause> list = new ArrayList<>(); // The overarching structure is a ArrayList of clauses, easy to gain access to
+    List<Clause> list = new ArrayList<>(); // The overarching structure is an ArrayList of clauses, allows for quick access
     List<Boolean> variables = new ArrayList<>();
     int variableIteration = 0;
     private int numVariables = 0;
@@ -16,25 +19,33 @@ public class Formula {
     }
 
     public boolean testFormula()
-    {
-        for(int i = 0; i < list.size(); i++) {
-            if (!(testClause(list.get(i)))) //Testing each one at a time, if a clause doesn't work:
+    {   boolean notDone = true;
+        while(notDone)
+        {
+            int i = 0;
+            while(i < list.size())
             {
-                //System.out.println("variableIterations: " + variableIteration);
+                 if (!(testClause(list.get(i)))) //Testing each one at a time, if a clause doesn't work:
+                {
+                    //System.out.println("variableIterations: " + variableIteration);  //Test to see how many iterations we've been through
 
-                incrementVariableList(); //If it fails, keep doing it but increment the variables
-                if(wentThroughVariableList()) //Went through the whole list, no possible outcomes
-                    return false;
+                    if (wentThroughVariableList()) //Went through the whole list, no possible outcomes
+                        return false;
 
-                return testFormula();
+                    incrementVariableList(); //If it fails, keep doing it but increment the variables
+
+                    i = -1;
+                }
+                 i++;
             }
+            notDone = false;
         }
         return true;  //If it goes through all the clauses, and none fail in an iteration, it returns true
     }
 
     //Went through entire variable list, typically means that there's no possible outcomes
     private boolean wentThroughVariableList() {
-        for(int i=0; i <= list.size(); i++)
+        for(int i=0; i < variables.size(); i++)
         {
             if(! variables.get(i)) //If any of them are false, we aren't finished with the list
                 return false;
@@ -54,9 +65,7 @@ public class Formula {
 
         //Adding additional 0's to the front of the boolean string
         while(booleanCounter.length() < numVariables)
-        {
-            booleanCounter = "0" + booleanCounter; //This would be SO MUCH more space efficient with a StringBuilder, but that's okay
-        }
+            booleanCounter = "0" + booleanCounter;
 
         for(int i = 0; i < booleanCounter.length(); i++)
         {
@@ -65,7 +74,7 @@ public class Formula {
             else
                 variables.set(i, true);
         }
-    //System.out.println(variables);  //To test if the variables are changing
+    //System.out.println(variables);  //Test to see how the variables are changing
     }
 
     public void setVariables(int parseInt) {
