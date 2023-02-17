@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class Driver {
     public static void main(String[] args) throws FileNotFoundException {
         final long programStart = System.currentTimeMillis(); //Timing to see how long the WHOLE program took
-
+        long startTime, endTime;
         //Take in a .txt file, (Figure out how to figure out the name of the files)
         File dir = new File("fileFolder");
         File[] files = dir.listFiles();
@@ -26,10 +26,6 @@ public class Driver {
             String[] input;
             Clause clause = new Clause();
             String name = "";
-
-
-            //Should make the loop for fileReader here
-            //fileReader = new Scanner(files[i])
 
             while (fileReader.hasNext()) {
                 input = fileReader.nextLine().split(" "); //Split the whole line by " "
@@ -55,11 +51,11 @@ public class Driver {
             } //Should have a full formula by now.
             fileReader.close();
 
-            long startTime = System.currentTimeMillis(); //Timing to see how long program took
+            startTime = System.currentTimeMillis(); //Timing to see how long program took
 
             boolean satisfied = formula.testFormula();
 
-            long endTime = System.currentTimeMillis(); // End timer for program
+            endTime = System.currentTimeMillis(); // End timer for program
 
             if(satisfied)
                 System.out.println(name + " is: SATISFIED");
@@ -68,7 +64,7 @@ public class Driver {
 
 
 
-            int seconds = (int)(endTime - startTime) / 1000;
+            int seconds = (int)((endTime - startTime) / 1000);
             if(seconds < 180)
                 System.out.println("Total execution time: " + seconds + " seconds\n");
             else
@@ -78,7 +74,7 @@ public class Driver {
 
         final long programEnd = System.currentTimeMillis(); //Timing to see how long the WHOLE program took
 
-        long minutes = (programEnd - programStart) / 1000 / 60;
+        int minutes = (int)(programEnd - programStart) / 1000 / 60;
 
         System.out.println("This whole program took " + minutes + " minutes to execute");
 
