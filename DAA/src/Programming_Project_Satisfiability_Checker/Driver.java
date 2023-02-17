@@ -12,8 +12,6 @@ public class Driver {
     public static void main(String[] args) throws FileNotFoundException {
         final long programStart = System.currentTimeMillis(); //Timing to see how long the WHOLE program took
 
-        Formula formula = new Formula();
-
         //Take in a .txt file, (Figure out how to figure out the name of the files)
         File dir = new File("fileFolder");
         File[] files = dir.listFiles();
@@ -21,6 +19,7 @@ public class Driver {
         //Create a forLoop here for the folders
         for(int filesIn = 0; filesIn < files.length; filesIn++)
         {
+           Formula formula = new Formula();
             Scanner fileReader = new Scanner(files[filesIn]);   //READING IN DATA FROM fileFolder
 
 
@@ -56,11 +55,11 @@ public class Driver {
             } //Should have a full formula by now.
             fileReader.close();
 
-            final long startTime = System.currentTimeMillis(); //Timing to see how long program took
+            long startTime = System.currentTimeMillis(); //Timing to see how long program took
 
             boolean satisfied = formula.testFormula();
 
-            final long endTime = System.currentTimeMillis(); // End timer for program
+            long endTime = System.currentTimeMillis(); // End timer for program
 
             if(satisfied)
                 System.out.println(name + " is: SATISFIED");
@@ -69,7 +68,7 @@ public class Driver {
 
 
 
-            long seconds = (endTime - startTime) / 1000;
+            int seconds = (int)(endTime - startTime) / 1000;
             if(seconds < 180)
                 System.out.println("Total execution time: " + seconds + " seconds\n");
             else
