@@ -1,4 +1,4 @@
-This is output from this code when I used Strings to create an updating variable list
+This is output from this code when I used just a boolean list to create an updating variable list
 
 Testing: p cnf 15 20. . .
 p cnf 15 20 is: SATISFIED
@@ -10,7 +10,7 @@ Total execution time: 0 seconds
 
 Testing: p cnf 28 144. . .
 p cnf 28 144 is: SATISFIED
-Total execution time: 108 seconds
+Total execution time: 61 seconds
 
 Testing: p cnf 5 21. . .
 p cnf 5 21 is: SATISFIED
@@ -26,20 +26,18 @@ Total execution time: 0 seconds
 
 Testing: p cnf 27 135. . .
 p cnf 27 135 is: UNSATISFIED
-Total execution time: 108 seconds
+Total execution time: 62 seconds
 
 Testing: p cnf 29 145. . .
 p cnf 29 145 is: UNSATISFIED
-Total execution time: 7 minutes
+Total execution time: 3 minutes
 
 Testing: p cnf 30 150. . .
 p cnf 30 150 is: UNSATISFIED
-Total execution time: 20 minutes
+Total execution time: 11 minutes
 
 Testing: p cnf 32 160. . .
 p cnf 32 160 is: UNSATISFIED
-Total execution time: 72 minutes
+Total execution time: 50 minutes
 
-This whole program took 103 minutes to execute
-
-Process finished with exit code 0
+This whole program took 68 minutes to execute

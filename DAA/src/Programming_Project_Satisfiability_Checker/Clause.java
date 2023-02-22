@@ -34,7 +34,7 @@ public class Clause {
             if(map.containsKey(lookingFor)) //If the map contains something in the list
             {
                 //Check to see if it any of them can return true, 1 true means the clause is fufilled
-                if(map.get(lookingFor) && ! variables.get(lookingFor-1)) //If variables = false, but it's a NOT clause
+                if(map.get(lookingFor) && ! variables.get(lookingFor-1)) //If variables = false, but it's negated
                     return true;
                 if(! (map.get(lookingFor)) && variables.get(lookingFor-1)) //If variables = true, and it's normal
                      return true;

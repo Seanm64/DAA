@@ -57,25 +57,39 @@ public class Formula {
         return clause.checkClause(variables);
     }
 
-
     public void incrementVariableList()
     {
-        variableIteration++;
-        String booleanCounter = Integer.toBinaryString(variableIteration); //Converts int to binary
-
-        //Adding additional 0's to the front of the boolean string
-        while(booleanCounter.length() < numVariables)
-            booleanCounter = "0" + booleanCounter;
-
-        for(int i = 0; i < booleanCounter.length(); i++)
+        //Go to the last 0 in the list, i = list.size
+        for(int i = variables.size()-1; i >= 0; i--)
         {
-            if(booleanCounter.charAt(i) == '0')
-                variables.set(i, false);
-            else
-                variables.set(i, true);
+            if( ! variables.get(i)) {
+                variables.set(i, true); //Flip the right most False to true
+                for(int j = i+1; j < variables.size(); j++)
+                    variables.set(j, false); //Turn every true after that to false
+//                System.out.println(variables);  //Test to see how the variables are changing
+                break;
+            }
         }
-    //System.out.println(variables);  //Test to see how the variables are changing
     }
+
+
+//    public void incrementVariableList()
+//    {
+//        variableIteration++;
+//        String booleanCounter = Integer.toBinaryString(variableIteration); //Converts int to binary
+//
+//        //Adding additional 0's to the front of the boolean string
+//        while(booleanCounter.length() < numVariables)
+//            booleanCounter = "0" + booleanCounter;
+//
+//        for(int i = 0; i < booleanCounter.length(); i++)
+//        {
+//            if(booleanCounter.charAt(i) == '0')
+//                variables.set(i, false);
+//            else
+//                variables.set(i, true);
+//        }
+//    }
 
     public void setVariables(int parseInt) {
         for(int i = 1; i <= parseInt; i++) {
