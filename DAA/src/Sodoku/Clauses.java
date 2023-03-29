@@ -1,5 +1,11 @@
 package org.example;
 
+import org.sat4j.minisat.SolverFactory;
+import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.ISolver;
+import org.sat4j.core.VecInt;
+
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +13,8 @@ public class Clauses {
     private List list = new ArrayList<>();
     private int smallBoxSize, fullBoxSize;
     private int[][] array;
+    private ISolver solver = SolverFactory.newDefault();
+
 
     public Clauses(int smallBoxSize) {
         this.smallBoxSize = smallBoxSize;
@@ -18,56 +26,93 @@ public class Clauses {
     }
 
 
-
+    /**
+     * Helper Function to generate all the clauses
+     */
     private void generateClauses() {
-
-        //First check to see if the clause already exists
-        //If it does exist, make a bunch of negated clauses for that position
+        //For EACH POSITION, create a temporary array of every value that can't be entered in that position
+            //Use that to find the normal and negated clauses
         for(int i = 0; i < fullBoxSize; i++)
         {
             for(int j = 0; j < fullBoxSize; j++)
             {
-                //There already is an input for this position
+                //If the spot is NOT a 0, then every clause can be a negated clause
                 if(array[i][j] != 0)
                 {
-                    int number = array[i][j];
-                    for(int turnIntoNegatedNumber = 1; turnIntoNegatedNumber < smallBoxSize; turnIntoNegatedNumber++)
+                    int numberInPosition = array[i][j];
+                    for(int k = 1; k <= fullBoxSize; k++)
                     {
-                        if(turnIntoNegatedNumber != number)
-                        {   //This doesn't work, it doesn't check any of the surrounding issues
-                            int[] negatedClause = {i, j, turnIntoNegatedNumber * -1};
-                            this.addClause(negatedClause);
+                        if(numberInPosition != k) { //The number already exists in the arrayList, make everything else negated
+                            int[] clause = {i, j, k * -1};
+                            this.addClause(clause);
                         }
+                    }
+                }
+                else //Else, the spot IS a 0, we have to figure out what clauses can fill that spot
+                {
+                    List<Integer> cantUse = new ArrayList();
+
+                    //get every number already in this column
+                    for (int row = 0; row < fullBoxSize; row++)
+                        cantUse.add(array[row][j]);
+
+                    //get every number already in this row
+                    for (int column = 0; column < fullBoxSize; column++)
+                        cantUse.add((array[i][column]));
+
+                    //get every number already in the small square containing the position
+                    //These numbers will help us figure out what "box" we're in
+                    int x = i / smallBoxSize;
+                    int endX = x * smallBoxSize + smallBoxSize;
+                    int y = j / smallBoxSize;
+                    int endY = j * smallBoxSize + smallBoxSize;
+
+                    //If we multiply X and Y by smallBox, we can start at the START of that box, and work our way through the whole box
+                    for (int boxX = x * smallBoxSize; boxX < endX; boxX++)
+                        for (int boxY = y * smallBoxSize; boxY < endY; boxY++)
+                            cantUse.add(array[boxX][boxY]); //Will submit every number in the smaller box
+
+                    //Make a normal + negated clause based off of the cantUse arraylist
+                    for (int k = 1; i <= fullBoxSize; i++) {
+                        int[] clause;
+
+                        if (cantUse.contains(k))
+                            clause = new int[]{i, j, k * -1}; //Negated Clause
+                        else
+                            clause = new int[]{i, j, k}; //Normal Clause
+
+                        this.addClause(clause);
                     }
                 }
             }
         }
-
-        //If it doesn't, check the row for a collision
-
-        //Check the column for a collision
-
-        //Check the small box for a collision
     }
 
-    public boolean solve(int[][] sodokuContainer) {
+    /** Goes through many helper functions to test to see if it is solvable
+     *
+     * @return true IFF the puzzle is solvable, false otherwise
+     */
+    public boolean solve(int[][] sodokuContainer) throws ContradictionException {
         array = sodokuContainer;
 
-        //Generate all of the clauses
+        //Generate all the clauses
         generateClauses();
 
         //Add all the clauses to the solver
-//                    solver.addClause(new VecInt((Integer) clauseList.get(0)));
+        updateSolver();
 
 
         //See if the solver can do it's thang
 
-
-        //Reverse engineer it
-
-
-        //Print out new 2D array (if can)
-
         return true;
+    }
+
+    /**
+     * Adds all the newly generated clauses to the solver
+     */
+    private void updateSolver() throws ContradictionException {
+        for(int i = 0; i < list.size(); i++) {
+                    solver.addClause(new VecInt((Integer) list.get(i)));
+        }
     }
 }

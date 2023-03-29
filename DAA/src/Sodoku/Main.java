@@ -3,15 +3,10 @@ package org.example;
  * @author Sean McKay
  */
 
-import org.sat4j.core.VecInt;
-import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.ISolver;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -20,12 +15,10 @@ public class Main {
         File[] files = dir.listFiles();
 
         Scanner fileReader = new Scanner(files[0]);   //READING IN DATA FROM sodokuInputs
-        ISolver solver = SolverFactory.newDefault();
 
 
         int rowCounter = 0;
         int[] clause = {0, 0, 0};
-        List clauseList = new ArrayList<>();
         String[] input;
 
         //Finding and creating the sodokuContainer
@@ -58,6 +51,12 @@ public class Main {
 
         //Test to see if it is solvable
         boolean solved = clauses.solve(sodokuContainer);
+
+        //Reverse engineer it
+
+
+        //Print out new 2D array (if can)
+
 
     }
 
