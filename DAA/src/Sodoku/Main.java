@@ -18,7 +18,6 @@ public class Main {
 
 
         int rowCounter = 0;
-        int[] clause = {0, 0, 0};
         String[] input;
 
         //Finding and creating the sodokuContainer
@@ -35,6 +34,8 @@ public class Main {
             rowCounter++;
             for(int columnCounter = 1; columnCounter < input.length+1; columnCounter++)
             {
+                int[] clause = {0, 0, 0}; //Instantiated here because I need the clause to delete itself after each iteration
+
                 clause[0] = rowCounter;
                 clause[1] = columnCounter;
                 clause[2] = Integer.parseInt(input[columnCounter-1]);

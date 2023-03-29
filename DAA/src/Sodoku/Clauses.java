@@ -36,6 +36,7 @@ public class Clauses {
         {
             for(int j = 0; j < fullBoxSize; j++)
             {
+                System.out.println("i= " + i + "\nj=" + j);
                 //If the spot is NOT a 0, then every clause can be a negated clause
                 if(array[i][j] != 0)
                 {
@@ -43,7 +44,7 @@ public class Clauses {
                     for(int k = 1; k <= fullBoxSize; k++)
                     {
                         if(numberInPosition != k) { //The number already exists in the arrayList, make everything else negated
-                            int[] clause = {i, j, k * -1};
+                            int[] clause = {i+1, j+1, k * -1};
                             this.addClause(clause);
                         }
                     }
@@ -65,7 +66,7 @@ public class Clauses {
                     int x = i / smallBoxSize;
                     int endX = x * smallBoxSize + smallBoxSize;
                     int y = j / smallBoxSize;
-                    int endY = j * smallBoxSize + smallBoxSize;
+                    int endY = y * smallBoxSize + smallBoxSize;
 
                     //If we multiply X and Y by smallBox, we can start at the START of that box, and work our way through the whole box
                     for (int boxX = x * smallBoxSize; boxX < endX; boxX++)
@@ -73,13 +74,13 @@ public class Clauses {
                             cantUse.add(array[boxX][boxY]); //Will submit every number in the smaller box
 
                     //Make a normal + negated clause based off of the cantUse arraylist
-                    for (int k = 1; i <= fullBoxSize; i++) {
+                    for (int k = 1; k <= fullBoxSize; k++) {
                         int[] clause;
 
                         if (cantUse.contains(k))
-                            clause = new int[]{i, j, k * -1}; //Negated Clause
+                            clause = new int[]{i+1, j+1, k * -1}; //Negated Clause
                         else
-                            clause = new int[]{i, j, k}; //Normal Clause
+                            clause = new int[]{i+1, j+1, k}; //Normal Clause
 
                         this.addClause(clause);
                     }
@@ -101,7 +102,6 @@ public class Clauses {
         //Add all the clauses to the solver
         updateSolver();
 
-
         //See if the solver can do it's thang
 
         return true;
@@ -112,7 +112,7 @@ public class Clauses {
      */
     private void updateSolver() throws ContradictionException {
         for(int i = 0; i < list.size(); i++) {
-                    solver.addClause(new VecInt((Integer) list.get(i)));
+                    solver.addClause(new VecInt((int[]) list.get(i)));
         }
     }
 }
