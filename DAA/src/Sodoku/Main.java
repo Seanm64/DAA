@@ -23,18 +23,18 @@ public class Main {
         ISolver solver = SolverFactory.newDefault();
 
 
-        int boxLength, boxWidth;
         int rowCounter = 0;
         int[] clause = {0, 0, 0};
         List clauseList = new ArrayList<>();
         String[] input;
 
         //Finding and creating the sodokuContainer
-        boxLength = Integer.parseInt(fileReader.nextLine());
-        boxLength = boxLength * boxLength;
-        boxWidth = Integer.parseInt(fileReader.nextLine());
-        boxWidth = boxWidth * boxWidth;
-        int[][] sodokuContainer = new int[boxLength][boxWidth];
+        int smallBoxSize = Integer.parseInt(fileReader.nextLine());
+        int fullBoxSize = Integer.parseInt(fileReader.nextLine());
+        fullBoxSize = fullBoxSize * fullBoxSize;
+
+        Clauses clauses = new Clauses(smallBoxSize);
+        int[][] sodokuContainer = new int[fullBoxSize][fullBoxSize];
 
         while (fileReader.hasNext()) {
             input = fileReader.nextLine().split(" "); //Split the whole line by " "
@@ -49,36 +49,27 @@ public class Main {
 
 
                 if(clause[2] != 0)
-                {
-                    clauseList.add(clause);
-//                    solver.addClause(new VecInt((Integer) clauseList.get(0)));
-//                    System.out.println(clause[0] + " " + clause[1] + " " + clause[2]) ;
-                }
+                    clauses.addClause(clause);
             }
         }
 
-        //Generate Every Clause Function
+        //Print out the current Sodoku
+        printSodoku(sodokuContainer, fullBoxSize);
+
+        //Test to see if it is solvable
+        boolean solved = clauses.solve(sodokuContainer);
+
+    }
 
 
-        //Add all the clauses to the solver
 
-
-        //See if the solver can do it's thang
-
-
-        //Reverse engineer it
-
-
-        //Print out new 2D array (if can)
-
-
-        //Trying to print out the whole sodoku List to see what's in it
-        for(int i = 0; i < boxLength; i++) {
-            for (int j = 0; j < boxWidth ; j++) {
-                System.out.print(sodokuContainer[i][j] + " ");
+    private static void printSodoku(int[][] array, int size) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                System.out.print(array[i][j] + " ");
             }
             System.out.println("");
         }
     }
-
 }
+
