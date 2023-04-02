@@ -4,9 +4,12 @@ import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.core.VecInt;
-
+import org.sat4j.specs.TimeoutException;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Clauses {
@@ -16,9 +19,11 @@ public class Clauses {
     private ISolver solver = SolverFactory.newDefault();
 
 
+
     public Clauses(int smallBoxSize) {
         this.smallBoxSize = smallBoxSize;
         fullBoxSize = smallBoxSize * smallBoxSize;
+        solver.setTimeout(3600);
     }
 
     public void addClause(int[] clause) {
@@ -32,25 +37,26 @@ public class Clauses {
     private void generateClauses() {
         //For EACH POSITION, create a temporary array of every value that can't be entered in that position
             //Use that to find the normal and negated clauses
-        for(int i = 0; i < fullBoxSize; i++)
+        for(int i = 0; i < fullBoxSize; i++) // rows
         {
-            for(int j = 0; j < fullBoxSize; j++)
+            for(int j = 0; j < fullBoxSize; j++) //columns
             {
-                System.out.println("i= " + i + "\nj=" + j);
                 //If the spot is NOT a 0, then every clause can be a negated clause
-                if(array[i][j] != 0)
+                /*if(array[i][j] != 0)
                 {
                     int numberInPosition = array[i][j];
                     for(int k = 1; k <= fullBoxSize; k++)
                     {
                         if(numberInPosition != k) { //The number already exists in the arrayList, make everything else negated
-                            int[] clause = {i+1, j+1, k * -1};
-                            this.addClause(clause);
+//                            int[] clause = {i+1, j+1, k * -1};
+
+                            //this.addClause(clause);
+
                         }
                     }
                 }
                 else //Else, the spot IS a 0, we have to figure out what clauses can fill that spot
-                {
+                {*/
                     List<Integer> cantUse = new ArrayList();
 
                     //get every number already in this column
@@ -73,27 +79,66 @@ public class Clauses {
                         for (int boxY = y * smallBoxSize; boxY < endY; boxY++)
                             cantUse.add(array[boxX][boxY]); //Will submit every number in the smaller box
 
-                    //Make a normal + negated clause based off of the cantUse arraylist
+
+                    // So right now, we know every number we can't use for that one spot
+                    //One number at a time, fill out the negate of that number's row, column and square
                     for (int k = 1; k <= fullBoxSize; k++) {
                         int[] clause;
 
                         if (cantUse.contains(k))
-                            clause = new int[]{i+1, j+1, k * -1}; //Negated Clause
+                        {
+                            clause = new int[]{-1 * ((i+1)*100 + (j+1) * 10 + k)}; //Negated Clause
+                        }
                         else
+                        {
+                            fillRows(k,i, j);
+                            fillColumns(k, i, j);
+                            fillSquare(k, i, j);
+
                             clause = new int[]{i+1, j+1, k}; //Normal Clause
+                        }
 
                         this.addClause(clause);
                     }
-                }
+                //}  //End of If/Else statement
             }
         }
+    }
+
+    private void fillRows(int k, int i, int j) {
+        for(int ndx = 1; ndx < fullBoxSize; ndx++)
+        {
+            try {
+                //Create a bunch of negate clauses and 1 single acceptance clause at (i,j)
+
+                FileWriter myWriter = new FileWriter("sudoku.cnf");
+
+                myWriter.append("Tear\n\nBear");
+
+                myWriter.close(); //It's important to close this lol
+
+
+            } catch (IOException e) {
+                System.out.println("An file error occurred.");
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private void fillColumns(int k, int i, int j) {
+
+    }
+
+    private void fillSquare(int k, int i, int j) {
+
     }
 
     /** Goes through many helper functions to test to see if it is solvable
      *
      * @return true IFF the puzzle is solvable, false otherwise
      */
-    public boolean solve(int[][] sodokuContainer) throws ContradictionException {
+    public boolean solve(int[][] sodokuContainer) throws ContradictionException, TimeoutException {
         array = sodokuContainer;
 
         //Generate all the clauses
@@ -103,8 +148,14 @@ public class Clauses {
         updateSolver();
 
         //See if the solver can do it's thang
+        solveIt();
 
         return true;
+    }
+
+    private void solveIt() throws TimeoutException {
+        System.out.println(solver.isSatisfiable());
+
     }
 
     /**

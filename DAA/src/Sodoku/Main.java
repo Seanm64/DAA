@@ -4,13 +4,14 @@ package org.example;
  */
 
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.TimeoutException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws FileNotFoundException, ContradictionException {
+    public static void main(String[] args) throws FileNotFoundException, ContradictionException, TimeoutException {
         File dir = new File("sodokuInputs");
         File[] files = dir.listFiles();
 
@@ -34,15 +35,16 @@ public class Main {
             rowCounter++;
             for(int columnCounter = 1; columnCounter < input.length+1; columnCounter++)
             {
-                int[] clause = {0, 0, 0}; //Instantiated here because I need the clause to delete itself after each iteration
+                int[] clause = {0}; //Instantiated here because I need the clause to delete itself after each iteration
 
-                clause[0] = rowCounter;
-                clause[1] = columnCounter;
-                clause[2] = Integer.parseInt(input[columnCounter-1]);
-                sodokuContainer[rowCounter-1][columnCounter-1] = clause[2];
+                clause[0] = rowCounter*100;
+                clause[0] += columnCounter*10;
+                int variable = Integer.parseInt(input[columnCounter-1]);
+                clause[0] += variable;
+                sodokuContainer[rowCounter-1][columnCounter-1] = variable;
 
 
-                if(clause[2] != 0)
+                if(variable != 0)
                     clauses.addClause(clause);
             }
         }
