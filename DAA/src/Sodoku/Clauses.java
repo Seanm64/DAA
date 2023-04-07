@@ -33,19 +33,22 @@ public class Clauses {
 
 
     private void generateClauses() {
-//        everyCellMustHaveOneValue(); //THIS WORKS PERFECTLY
-//        everyCellCannotHaveMoreThanOneValue(); //THIS WORKS PERFECTLY
-//        noTwoCellsInARowCanHaveTheSameValue(); //THIS WORKS PERFECTLY
-//        noTwoCellsInAColumnCanHaveTheSameValue(); //THIS WORKS PERFECTLY
-          noTwoCellsInABlockCanHaveTheSameValue();
+        everyCellMustHaveOneValue(); //THIS WORKS PERFECTLY
+        everyCellCannotHaveMoreThanOneValue(); //THIS WORKS PERFECTLY
+        noTwoCellsInARowCanHaveTheSameValue(); //THIS WORKS PERFECTLY
+        noTwoCellsInAColumnCanHaveTheSameValue(); //THIS WORKS PERFECTLY
+        noTwoCellsInABlockCanHaveTheSameValue(); //Partially Works, needs to be reworked to remove excess clauses
+        fillTableBasedOffConstraints();
+
         System.out.println(clauses);
+        System.out.println("Amount of clauses: " + clauses.size());
 
     }
 
     private void noTwoCellsInABlockCanHaveTheSameValue() {
-        for(int i = 1; i <= fullBoxSize; i++)
+        for(int i = 0; i < fullBoxSize; i++)
         {
-            for(int j = 1; j <= fullBoxSize; j++)
+            for(int j = 0; j < fullBoxSize; j++)
             {
                 for(int value = 1; value <= fullBoxSize; value++)
                 {
@@ -54,22 +57,24 @@ public class Clauses {
 
                     int x = i / smallBoxSize;
                     x = x * smallBoxSize; //Starting X
-                    int endX = x * smallBoxSize + smallBoxSize;
+                    int endX = x + smallBoxSize;
+
                     int y = j / smallBoxSize;
                     y = y * smallBoxSize; //Starting Y
-                    int endY = y * smallBoxSize + smallBoxSize;
+                    int endY = y + smallBoxSize;
 
                     for (int boxX = x; boxX < endX; boxX++)
                         for (int boxY = y; boxY < endY; boxY++) {
+
                             //Do the whole row, then go on to the next column
-                            for(int pairX = x; pairX < endX; pairX++)
-                                for(int pairY = y; pairY < endY; pairY++)
+                            for(int pairX = x+1; pairX <= endX; pairX++)
+                                for(int pairY = y+1; pairY <= endY; pairY++)
                                 {
-                                    if(pairY != boxY && pairX != boxX) {
+                                    if(pairY != boxY+1 || pairX != boxX+1) {
                                         int variable1, variable2;
 
                                         variable1 = -1 * ((boxX+1) * encoder * encoder + (boxY+1) * encoder + value);
-                                        variable2 = -1 * ((pairX+1) * encoder * encoder + (pairY+1) * encoder + value);
+                                        variable2 = -1 * ((pairX) * encoder * encoder + (pairY) * encoder + value);
 
                                         clauses.add(variable1 + " " + variable2 + " 0\n");
                                     }
@@ -137,20 +142,15 @@ public class Clauses {
 
 
 
-
-
-
-    /*
-        REMOVE BELLOW STUFF
-     */
-
-    private void generateClauses(int THISONEDOESNTWORK) {
+    private void fillTableBasedOffConstraints() {
         //For EACH POSITION, create a temporary array of every value that can't be entered in that position
             //Use that to find the normal and negated clauses
         for(int i = 0; i < fullBoxSize; i++) // rows
         {
             for(int j = 0; j < fullBoxSize; j++) //columns
             {
+                    if(array[i][j] == 0)
+                    {
                     List<Integer> cantUse = new ArrayList();
 
                     //get every number already in this column
@@ -174,28 +174,23 @@ public class Clauses {
                             cantUse.add(array[boxX][boxY]); //Will submit every number in the smaller box
 
 
+
+
                     // So right now, we know every number we can't use for that one spot
                     //One number at a time, fill out the negate of that number's row, column and square
-                    for (int k = 1; k <= fullBoxSize; k++) {
+                    for (int value = 1; value <= fullBoxSize; value++) {
                         int[] clause;
 
-                        if (cantUse.contains(k)) //Can't be this number, so creates a negate clause
-//                            clauses.append(-1 * i*encoder*encoder*100 + j * 10*encoder + k);
-//                            clauses.append(-1 * i*100 + j * 10 + k);
-                            System.out.println(""); //Just to get rid of error
-
-                        else
-
-                        {
-//                            fillRows(k,i, j);
-                            System.out.println(clauses);
-//                            fillColumns(k, i, j);
-                            System.out.println(clauses);
-//                            fillSquare(k, i, j);
-                            System.out.println(clauses);
+                        if (cantUse.contains(value)) //Can't be this number, so creates a negate clause
+                            clauses.add((-1 * ((i+1) * encoder * encoder + (j+1) * encoder + value)) + " 0\n");
+                        else {
+                            fillRows(value, i+1, j+1);            //Inefficient with repeated clauses
+                            fillColumns(value, i+1, j+1);         //Inefficient with repeated clauses
+                            fillSquare(value, i+1, j+1);       //Good enough for government work
+//                            System.out.println(clauses);
                         }
-
                     }
+                }
             }
         }
     }
@@ -220,68 +215,63 @@ public class Clauses {
         }
     }
 
-   /* private void fillRows(int k, int i, int j) {
-        for(int ndx = 1; ndx < fullBoxSize; ndx++)
+    private void fillRows(int k, int i, int j) {
+        String clause = "";
+
+        for(int ndx = 1; ndx <= fullBoxSize; ndx++)
         {
             //Create a bunch of negate clauses and 1 single acceptance clause at (i,j) , i stays the same though
             if(ndx == j)
 //                clauses.append(i*100*encoder*encoder + ndx*encoder * 10 + k);
-                clauses.append(i*100+ ndx*10 + k);
+                clause += (i*encoder*encoder+ ndx*encoder + k) + " ";
 
             else
 //                clauses.append(-1 * i*100*encoder + ndx * encoder * 10 + k);
-                clauses.append(-1 * i*100 + ndx*10 + k);
-
-
-            clauses.append(" ");
+                clause += (-1 * (i*encoder*encoder + ndx*encoder + k)) + " ";
         }
-        clauses.append(0 + "\n");
+        clauses.add(clause + " 0\n");
     }
-*/
 
-    /*private void fillColumns(int k,int i, int j) {
-        for(int ndx = 1; ndx < fullBoxSize; ndx++)
+    private void fillColumns(int k,int i, int j) {
+        String clause = "";
+
+        for(int ndx = 1; ndx <= fullBoxSize; ndx++)
         {
             //Create a bunch of negate clauses and 1 single acceptance clause at (i,j) , i stays the same though
-            if(ndx == i){
-//                clauses.append(ndx*100*encoder*encoder + j * 10 * encoder + k);
-                clauses.append(ndx*100 + j * 10+ k);}
+            if(ndx == i)
+//                clauses.append(i*100*encoder*encoder + ndx*encoder * 10 + k);
+                clause += (ndx*encoder*encoder+ j*encoder + k) + " ";
 
-            else{}
-//                clauses.append(-1 * ndx*100*encoder*encoder + j*encoder * 10 + k);
-                clauses.append(-1 * ndx + j* 10 + k);
-
-
-            clauses.append(" ");
+            else
+//                clauses.append(-1 * i*100*encoder + ndx * encoder * 10 + k);
+                clause += (-1 * (ndx*encoder*encoder + j*encoder + k)) + " ";
         }
-        clauses.append(0 + "\n");
-
+        clauses.add(clause + " 0\n");
     }
-*/
-    /*private void fillSquare(int k, int i, int j) {
+
+
+    private void fillSquare(int k, int i, int j) {
         int x = i / smallBoxSize;
         int endX = x * smallBoxSize + smallBoxSize;
         int y = j / smallBoxSize;
         int endY = y * smallBoxSize + smallBoxSize;
+        String clause = "";
 
         //If we multiply X and Y by smallBox, we can start at the START of that box, and work our way through the whole box
         for (int boxX = x * smallBoxSize; boxX < endX; boxX++)
             for (int boxY = y * smallBoxSize; boxY < endY; boxY++)
             {
                 if(boxX == i && boxY == j)
-//                    clauses.append(i*100*encoder*encoder + j * 10 * encoder + k);
-                    clauses.append(i*100 + j * 10+ k);
+                    clause += (i*encoder*encoder + j*encoder + k);
 
                 else
-//                    clauses.append(-1 * boxX*100*encoder*encoder + boxY*encoder * 10 + k);
-                    clauses.append(-1 * boxX*100 + boxY* 10 + k);
+                    clause += (-1 * (boxX*encoder*encoder + boxY*encoder + k));
 
-                clauses.append(" ");
+                clause += " ";
             }
 
-        clauses.append(0 + "\n");
+        clauses.add(clause + " 0\n");
     }
-*/
 
     /** Goes through many helper functions to test to see if it is solvable
      *
