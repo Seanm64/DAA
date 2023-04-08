@@ -1,10 +1,6 @@
 package org.example;
 
-import org.sat4j.minisat.SolverFactory;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.ISolver;
-import org.sat4j.core.VecInt;
-import org.sat4j.specs.TimeoutException;
+
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -15,14 +11,11 @@ public class Clauses {
     private List<String> clauses = new ArrayList<>();
     private int smallBoxSize, fullBoxSize, encoder;
     private int[][] array;
-    private ISolver solver = SolverFactory.newDefault();
-//    private StringBuilder clause = new StringBuilder();
 
 
     public Clauses(int smallBoxSize) {
         this.smallBoxSize = smallBoxSize;
         fullBoxSize = smallBoxSize * smallBoxSize;
-        solver.setTimeout(3600);
 //        encoder = fullBoxSize;
         encoder = 10;
     }
@@ -31,18 +24,41 @@ public class Clauses {
         clauses.add(clause);
     }
 
+    public List getClauses() {
+        return clauses;
+    }
 
-    private void generateClauses() {
+
+    public void generateClauses(int[][] sodokuContainer) {
+        array = sodokuContainer;
+
         everyCellMustHaveOneValue(); //THIS WORKS PERFECTLY
         everyCellCannotHaveMoreThanOneValue(); //THIS WORKS PERFECTLY
         noTwoCellsInARowCanHaveTheSameValue(); //THIS WORKS PERFECTLY
         noTwoCellsInAColumnCanHaveTheSameValue(); //THIS WORKS PERFECTLY
         noTwoCellsInABlockCanHaveTheSameValue(); //Partially Works, needs to be reworked to remove excess clauses
         fillTableBasedOffConstraints();
+        sendClausesToTextFile();
 
-        System.out.println(clauses);
-        System.out.println("Amount of clauses: " + clauses.size());
+//        System.out.println(clauses);
+//        System.out.println("Amount of clauses: " + clauses.size());
+    }
 
+    private void sendClausesToTextFile() {
+        try {
+            FileWriter myWriter = new FileWriter("sudoku.cnf");
+
+            myWriter.write("p cnf " + fullBoxSize + " " + clauses.size() + "\n");
+            for(int i = 0; i < clauses.size(); i++)
+                myWriter.append(clauses.get(i) + "\n");
+
+            myWriter.close(); //It's important to close this lol
+
+
+        } catch (IOException e) {
+            System.out.println("An file error occurred.");
+            e.printStackTrace();
+        }
     }
 
     private void noTwoCellsInABlockCanHaveTheSameValue() {
@@ -76,7 +92,7 @@ public class Clauses {
                                         variable1 = -1 * ((boxX+1) * encoder * encoder + (boxY+1) * encoder + value);
                                         variable2 = -1 * ((pairX) * encoder * encoder + (pairY) * encoder + value);
 
-                                        clauses.add(variable1 + " " + variable2 + " 0\n");
+                                        clauses.add(variable1 + " " + variable2 + " 0");
                                     }
                                 }
                         }
@@ -94,7 +110,7 @@ public class Clauses {
                             int variable1, variable2;
                             variable1 = -1 * (i * encoder * encoder + j * encoder + value);
                             variable2 = -1 * (pairI * encoder * encoder + j * encoder + value);
-                            clauses.add(variable1 + " " + variable2 + " 0\n");
+                            clauses.add(variable1 + " " + variable2 + " 0");
                         }
     }
 
@@ -106,7 +122,7 @@ public class Clauses {
                 for (int k = 1; k <= fullBoxSize; k++)
                         clause += (i*encoder*encoder + j*encoder + k + " ");
 
-                clause += ("0\n");
+                clause += ("0");
                 clauses.add(clause);
             }
 
@@ -123,7 +139,7 @@ public class Clauses {
                             variable1 = -1 * (i*encoder*encoder + j*encoder + value);
                             variable2 = -1 * (i*encoder*encoder + j*encoder + pair);
 
-                            clauses.add(variable1 + " " + variable2 + " 0\n");
+                            clauses.add(variable1 + " " + variable2 + " 0");
                         }
     }
 
@@ -136,7 +152,7 @@ public class Clauses {
                             int variable1, variable2;
                             variable1 = -1 * (i * encoder * encoder + j * encoder + value);
                             variable2 = -1 * (i * encoder * encoder + pairJ * encoder + value);
-                            clauses.add(variable1 + " " + variable2 + " 0\n");
+                            clauses.add(variable1 + " " + variable2 + " 0");
                         }
     }
 
@@ -182,7 +198,7 @@ public class Clauses {
                         int[] clause;
 
                         if (cantUse.contains(value)) //Can't be this number, so creates a negate clause
-                            clauses.add((-1 * ((i+1) * encoder * encoder + (j+1) * encoder + value)) + " 0\n");
+                            clauses.add((-1 * ((i+1) * encoder * encoder + (j+1) * encoder + value)) + " 0");
                         else {
                             fillRows(value, i+1, j+1);            //Inefficient with repeated clauses
                             fillColumns(value, i+1, j+1);         //Inefficient with repeated clauses
@@ -192,26 +208,6 @@ public class Clauses {
                     }
                 }
             }
-        }
-    }
-
-    private void fillFile()
-    {
-        //Insert the p cnf # # here
-
-
-        //Then add the whole stringBuilder to the file
-        try {
-            FileWriter myWriter = new FileWriter("sudoku.cnf");
-
-            myWriter.append("Tear\n\nBear");
-
-            myWriter.close(); //It's important to close this lol
-
-
-        } catch (IOException e) {
-            System.out.println("An file error occurred.");
-            e.printStackTrace();
         }
     }
 
@@ -229,7 +225,7 @@ public class Clauses {
 //                clauses.append(-1 * i*100*encoder + ndx * encoder * 10 + k);
                 clause += (-1 * (i*encoder*encoder + ndx*encoder + k)) + " ";
         }
-        clauses.add(clause + " 0\n");
+        clauses.add(clause + " 0");
     }
 
     private void fillColumns(int k,int i, int j) {
@@ -246,7 +242,7 @@ public class Clauses {
 //                clauses.append(-1 * i*100*encoder + ndx * encoder * 10 + k);
                 clause += (-1 * (ndx*encoder*encoder + j*encoder + k)) + " ";
         }
-        clauses.add(clause + " 0\n");
+        clauses.add(clause + " 0");
     }
 
 
@@ -270,40 +266,6 @@ public class Clauses {
                 clause += " ";
             }
 
-        clauses.add(clause + " 0\n");
+        clauses.add(clause + " 0");
     }
-
-    /** Goes through many helper functions to test to see if it is solvable
-     *
-     * @return true IFF the puzzle is solvable, false otherwise
-     */
-    public boolean solve(int[][] sodokuContainer) throws ContradictionException, TimeoutException {
-        array = sodokuContainer;
-
-        //Generate all the clauses
-        generateClauses();
-//        System.out.println(clauses);
-
-        //Add all the clauses to the solver
-//        updateSolver();
-
-        //See if the solver can do it's thang
-        solveIt();
-
-        return true;
-    }
-
-    private void solveIt() throws TimeoutException {
-        System.out.println(solver.isSatisfiable());
-
-    }
-
-    /**
-     * Adds all the newly generated clauses to the solver
-     */
-    /*private void updateSolver() throws ContradictionException {
-        for(int i = 0; i < list.size(); i++) {
-                    solver.addClause(new VecInt((int[]) list.get(i)));
-        }
-    }*/
 }

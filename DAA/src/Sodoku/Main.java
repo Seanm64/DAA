@@ -24,6 +24,8 @@ public class Main {
         //Finding and creating the sodokuContainer
         int smallBoxSize = Integer.parseInt(fileReader.nextLine());
         int fullBoxSize = Integer.parseInt(fileReader.nextLine());
+        int encoder = 10;
+
         fullBoxSize = fullBoxSize * fullBoxSize;
 
         Clauses clauses = new Clauses(smallBoxSize);
@@ -33,29 +35,28 @@ public class Main {
             input = fileReader.nextLine().split(" "); //Split the whole line by " "
 
             rowCounter++;
+
             for(int columnCounter = 1; columnCounter < input.length+1; columnCounter++)
             {
-//                int[] clause = {0}; //Instantiated here because I need the clause to delete itself after each iteration
                 String clause = "";
                 int variable = Integer.parseInt(input[columnCounter-1]);
 
-                clause += (rowCounter*fullBoxSize*fullBoxSize + columnCounter*fullBoxSize + variable);
-//                clause[0] = rowCounter*100;
-//                clause[0] += columnCounter*10;
-//                clause[0] += variable;
+                clause += (rowCounter*encoder*encoder + columnCounter*encoder + variable + " 0");
                 sodokuContainer[rowCounter-1][columnCounter-1] = variable;
 
-
-//                if(variable != 0)
-//                    clauses.addClause(clause);
+                if(variable != 0)
+                    clauses.addClause(clause);
             }
         }
 
         //Print out the current Sodoku
         printSodoku(sodokuContainer, fullBoxSize);
 
-        //Test to see if it is solvable
-        boolean solved = clauses.solve(sodokuContainer);
+        //Generate all clauses needed to solve the sudoku
+        clauses.generateClauses(sodokuContainer);
+
+        //Solve it
+        Solver solver = new Solver();
 
         //Reverse engineer it
 
