@@ -56,7 +56,7 @@ public class Main {
         clauses.generateClauses(sodokuContainer);
 
         //Solve it
-        Solver solver = new Solver();
+//        Solver solver = new Solver();
 
         //Reverse engineer it
 

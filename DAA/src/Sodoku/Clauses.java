@@ -62,10 +62,8 @@ public class Clauses {
     }
 
     private void noTwoCellsInABlockCanHaveTheSameValue() {
-        for(int i = 0; i < fullBoxSize; i++)
-        {
-            for(int j = 0; j < fullBoxSize; j++)
-            {
+        for(int i = 0; i < fullBoxSize; i += smallBoxSize)
+            for(int j = 0; j < fullBoxSize; j += smallBoxSize)
                 for(int value = 1; value <= fullBoxSize; value++)
                 {
                     //get every number already in the small square containing the position
@@ -80,13 +78,13 @@ public class Clauses {
                     int endY = y + smallBoxSize;
 
                     for (int boxX = x; boxX < endX; boxX++)
-                        for (int boxY = y; boxY < endY; boxY++) {
+                        for (int boxY = y; boxY < endY; boxY++)
 
                             //Do the whole row, then go on to the next column
                             for(int pairX = x+1; pairX <= endX; pairX++)
                                 for(int pairY = y+1; pairY <= endY; pairY++)
-                                {
-                                    if(pairY != boxY+1 || pairX != boxX+1) {
+                                    if(pairY != boxY+1 || pairX != boxX+1)
+                                    {
                                         int variable1, variable2;
 
                                         variable1 = -1 * ((boxX+1) * encoder * encoder + (boxY+1) * encoder + value);
@@ -94,11 +92,7 @@ public class Clauses {
 
                                         clauses.add(variable1 + " " + variable2 + " 0");
                                     }
-                                }
                         }
-                }
-            }
-        }
     }
 
     private void noTwoCellsInAColumnCanHaveTheSameValue() {

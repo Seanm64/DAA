@@ -16,7 +16,7 @@ public class Solver {
     public Solver()
     {
         solver.setTimeout(3600);
-        solver.(file);
+//        solver.(file);
     }
 
     public void updateSolver()
