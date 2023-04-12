@@ -16,8 +16,7 @@ public class Clauses {
     public Clauses(int smallBoxSize) {
         this.smallBoxSize = smallBoxSize;
         fullBoxSize = smallBoxSize * smallBoxSize;
-//        encoder = fullBoxSize;
-        encoder = 10;
+        encoder = fullBoxSize + 1;
     }
 
     public void addClause(String clause) {
@@ -32,27 +31,29 @@ public class Clauses {
     public void generateClauses(int[][] sodokuContainer) {
         array = sodokuContainer;
 
-        everyCellMustHaveOneValue(); //THIS WORKS PERFECTLY
-        everyCellCannotHaveMoreThanOneValue(); //THIS WORKS PERFECTLY
-        noTwoCellsInARowCanHaveTheSameValue(); //THIS WORKS PERFECTLY
-        noTwoCellsInAColumnCanHaveTheSameValue(); //THIS WORKS PERFECTLY
-        noTwoCellsInABlockCanHaveTheSameValue(); //Partially Works, needs to be reworked to remove excess clauses
+        everyCellMustHaveOneValue();
+        everyCellCannotHaveMoreThanOneValue();
+        noTwoCellsInARowCanHaveTheSameValue();
+        noTwoCellsInAColumnCanHaveTheSameValue();
+        noTwoCellsInABlockCanHaveTheSameValue();
         fillTableBasedOffConstraints();
-        sendClausesToTextFile();
 
-//        System.out.println(clauses);
-//        System.out.println("Amount of clauses: " + clauses.size());
+        sendClausesToTextFile();
     }
 
     private void sendClausesToTextFile() {
         try {
             FileWriter myWriter = new FileWriter("sudoku.cnf");
+            int maxNumOfClauses = fullBoxSize * encoder * encoder + fullBoxSize * encoder + fullBoxSize;
 
-            myWriter.write("p cnf " + fullBoxSize + " " + clauses.size() + "\n");
-            for(int i = 0; i < clauses.size(); i++)
-                myWriter.append(clauses.get(i) + "\n");
+            myWriter.write("p cnf " + maxNumOfClauses + " " + clauses.size() + "\n");
+            for(int i = 0; i < clauses.size(); i++) {
+                myWriter.append(clauses.get(i));
+                if(i != clauses.size() - 1)
+                    myWriter.append("\n");
+            }
 
-            myWriter.close(); //It's important to close this lol
+            myWriter.close();
 
 
         } catch (IOException e) {
