@@ -7,17 +7,18 @@ import org.sat4j.reader.ParseFormatException;
 import org.sat4j.specs.ContradictionException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws FileNotFoundException, ContradictionException {
+    public static void main(String[] args) throws IOException, ContradictionException, ParseFormatException {
         File dir = new File("sodokuInputs");
         File[] files = dir.listFiles();
 
         //Go through every file
-        for(int fileIterator = 0; fileIterator < 5; fileIterator++) {
+        for(int fileIterator = 0; fileIterator < 6; fileIterator++) {
+            final long programStart = System.currentTimeMillis();
+
             Scanner fileReader = new Scanner(files[fileIterator]);   //READING IN DATA FROM sodokuInputs
 
 
@@ -58,7 +59,7 @@ public class Main {
             clauses.generateClauses(sodokuContainer);
 
             //Solve it
-            Solver solver;
+            Solver solver = new Solver();
 
             try {
                 solver = new Solver(sodokuContainer, encoder);
@@ -67,17 +68,21 @@ public class Main {
             } catch (ParseFormatException e) {
                 throw new RuntimeException(e);
             } catch (ContradictionException e) {
-                throw new ContradictionException(e);
+                System.out.println("Error Unsatisfiable... (Trivial)");
             }
 
             int[] model = {1};
             //Reverse engineer it
-            if (solver.solvable()) {
+                if (solver.solvable()) {
                 System.out.println("This is solvable, Solved output:\n");
                 sodokuContainer = solver.getModel();
                 printSodoku(sodokuContainer, fullBoxSize);
             } else
                 System.out.println("Cannot Be Solved.");
+            final long programEnd = System.currentTimeMillis();
+
+            System.out.println("Total time for solving: " + (programEnd - programStart) + " milliseconds\n\n");
+
         }
     }
 
@@ -93,4 +98,3 @@ public class Main {
         System.out.println("\n");
     }
 }
-

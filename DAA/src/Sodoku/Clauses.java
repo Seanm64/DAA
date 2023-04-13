@@ -1,3 +1,8 @@
+/**
+ * @author Sean McKay
+ * Clauses class, will generate all of the clauses that define the rules of Sudoku
+ */
+
 package org.example;
 
 
@@ -120,7 +125,6 @@ public class Clauses {
                 clause += ("0");
                 clauses.add(clause);
             }
-
     }
 
     private void everyCellCannotHaveMoreThanOneValue() {

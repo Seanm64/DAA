@@ -1,3 +1,8 @@
+/**
+ * @author Sean McKay
+ * Solver Class, will solve and return the model of the Sudoku
+ */
+
 package org.example;
 
 import org.sat4j.minisat.SolverFactory;
@@ -18,6 +23,10 @@ public class Solver {
     private int[] model;
     private int[][] sudokuArray;
 
+    public Solver()
+    {
+
+    }
     public Solver(int[][] container, int decoder) throws ContradictionException, IOException, ParseFormatException
     {
         solver.setTimeout((3600));
@@ -31,35 +40,23 @@ public class Solver {
     }
 
     public int[][] getModel() {
-        model = problem.model();
-
         //Decode and return array of correct sudoku
-        decode();
-
-        return sudokuArray;
-    }
-
-    public void decode()
-    {
         //Need a for loop to iterate through every variable
-        for(int variable : model)
-        {
+        for (int variable : problem.model()) {
             //Every non-negative variable will be an accepted state for the sudoku, dissect it
-            if(variable > 0)
-            {
+            if (variable > 0) {
                 //Decode the dissected members and add them to the sudokuArray
                 int i, j, k;
                 k = variable % decoder;
                 j = variable / decoder % decoder;
                 i = variable / decoder / decoder % decoder;
 
-                sudokuArray[i-1][j-1] = k;
+                sudokuArray[i - 1][j - 1] = k;
             }
         }
-
-
-
+        return sudokuArray;
     }
+
 
     public boolean solvable()
     {
@@ -67,6 +64,8 @@ public class Solver {
             return problem.isSatisfiable();
         } catch (TimeoutException e) {
             throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            return false;
         }
     }
 }
